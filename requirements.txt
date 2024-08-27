@@ -1,0 +1,7 @@
+pywebview
+websockets
+pydub
+requests
+opencv-python
+Pillow
+numpy
