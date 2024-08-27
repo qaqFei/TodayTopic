@@ -240,7 +240,7 @@ try:
         
         writer.write(nparray(frame)[:, :, ::-1])
         print(f"\rcrating video frame {fcut} / {maxframe}", end="")
-except StopIteration as e:
+except Exception as e:
     print(e)
 
 writer.release()
