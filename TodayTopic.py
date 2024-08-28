@@ -1,12 +1,13 @@
 import threading
 import json
 import asyncio
-from os import mkdir
+from os import mkdir, system
 from sys import argv
 from tempfile import gettempdir
 from time import time
 from shutil import rmtree
 from io import BytesIO
+from ctypes import windll
 
 import webview
 import websockets
@@ -16,8 +17,9 @@ import cv2
 from PIL import Image, ImageDraw, ImageFont
 from numpy import array as nparray
 
-if len(argv) < 2:
-    print("Usage: TodayTopic <zhihu_question_id>")
+if len(argv) < 4:
+    print("Usage: TodayTopic <zhihu_question_id> <question_image> <output_video>")
+    windll.kernel32.ExitProcess(0)
 
 threading._curt = threading.current_thread
 def _current_thread():
@@ -152,7 +154,7 @@ contentDatas.append({
     "im": False
 })
 
-defaultIm = Image.open("default.png")
+defaultIm = Image.open(argv[2])
 defaultErrIm = Image.open("default-err.png")
 tempDir = f"{gettempdir()}/todayTopic_temp{time()}"
 try: mkdir(tempDir)
@@ -179,9 +181,7 @@ for item in contentDatas:
     mergedSeg = mergedSeg.overlay(item["seg"], int(nowoggt * 1000))
     nowoggt += item["seg"].duration_seconds
 
-mergedSeg.export("audio.ogg", format="ogg")
-try: rmtree(tempDir)
-except Exception as e: print(e)
+mergedSeg.export(f"{tempDir}/audio.ogg", format="ogg")
 
 contentEvents = []
 st = 0.0
@@ -202,7 +202,7 @@ def getNowState(t: float):
     return defaultIm, 1.0, contentDatas[-1]["text"]
 
 writer = cv2.VideoWriter(
-    "video.mp4",
+    f"{tempDir}/video.mp4",
     cv2.VideoWriter.fourcc(*"mp4v"),
     60,
     (1920, 1080),
@@ -244,3 +244,8 @@ except Exception as e:
     print(e)
 
 writer.release()
+
+system(f"ffmpeg -i \"{tempDir}/video.mp4\" -i \"{tempDir}/audio.ogg\" -acodec copy -vcodec copy \"{argv[3]}\"")
+
+try: rmtree(tempDir)
+except Exception as e: print(e)
