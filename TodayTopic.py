@@ -35,8 +35,8 @@ appid = 3704
 appkey = "IZjhUeAYwP"
 uvc = "6.0.1.11779"
 vc = "6.0.1"
-un = "名称"
-pt = "平台"
+un = "up主"
+pt = ""
 
 window = webview.create_window("", f"https://www.zhihu.com/question/{zhihu_qid}")
 threading.Thread(target=lambda:webview.start(debug=True, private_mode=False), daemon=True).start()
