@@ -1,7 +1,8 @@
 import threading
 import json
 import asyncio
-from os import mkdir, system
+from os import mkdir, system, chdir
+from os.path import dirname, abspath
 from sys import argv
 from tempfile import gettempdir
 from time import time
@@ -20,6 +21,10 @@ from numpy import array as nparray
 if len(argv) < 4:
     print("Usage: TodayTopic <zhihu_question_id> <question_image> <output_video>")
     windll.kernel32.ExitProcess(0)
+
+selfdir = dirname(argv[0])
+if selfdir == "": selfdir = abspath(".")
+chdir(selfdir)
 
 threading._curt = threading.current_thread
 def _current_thread():
